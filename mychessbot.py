@@ -11,7 +11,12 @@ os.environ['path'] += r';C:\Drivers\vips-dev-8.13\bin'
 import pyvips
 
 # print(os.environ['path'])
-TOKEN = "5923620449:AAGANQeHrq0da-W3GnKP9bCOmEcJV20gnD8"
+
+# Token is stored locally for security resaons 
+# Open the token file in reading mode
+with open('token.txt', 'r') as file:
+  # Read the entire contents of the file as a string
+  TOKEN = file.read()
 
 # Create the bot using the token provided by the BotFather
 bot = telebot.TeleBot(TOKEN)
