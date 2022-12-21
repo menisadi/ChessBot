@@ -1,6 +1,8 @@
 import telebot
 import os
 import random 
+import io
+from datetime import date
 
 # Import the chess library
 import chess
@@ -82,6 +84,8 @@ def start_game(message):
         games[cid] = dict()
         games[cid]['Board'] = chess.Board()
         games[cid]['Engine'] = 'random'
+        games[cid]['Count'] = 0
+        games[cid]['PGN'] = ""
 
     games[cid]['Board'].set_fen(chess.STARTING_FEN)
 
@@ -118,10 +122,18 @@ def legal_moves(message):
     bot.send_message(message.chat.id, ' '.join(moves_in_san))
 
 
-# @bot.message_handler(commands=['pgn'])
-# def pgn(message):
-#     # Send the pgn to the user
-#     bot.send_message(message.chat.id, game)
+@bot.message_handler(commands=['pgn'])
+def pgn(message):
+    cid = message.chat.id
+    final_pgn = games[cid]['PGN'] + '\n\n'
+    game_pgn = chess.pgn.read_game(io.StringIO(final_pgn))
+    game_pgn.headers["Event"] = 'Blind-chess match'
+    game_pgn.headers["Site"] = 'Telegram'
+    game_pgn.headers["White"] = 'Me'
+    game_pgn.headers["Black"] = 'Telegram Bot'
+    game_pgn.headers["Date"] = date.today()
+    # Send the pgn to the user
+    bot.send_message(message.chat.id, game_pgn)
 
 
 @bot.message_handler(func=lambda message: not message.text.startswith('/'))
@@ -139,6 +151,8 @@ def make_move(message):
                 games[cid] = dict()
                 games[cid]['Board'] = chess.Board()
                 games[cid]['Engine'] = 'random'
+                games[cid]['Count'] = 0
+                games[cid]['PGN'] = ""              
                 games[cid]['Board'].set_fen(chess.STARTING_FEN)                
                 games[cid]['Board'].push_san(move)
             legal_move = True
@@ -146,15 +160,19 @@ def make_move(message):
         except ValueError:
             bot.send_message(message.chat.id, f"{move} is not a legal move.")
             return
-
+    
+    games[cid]['Count'] = games[cid]['Count'] + 1
+    games[cid]['PGN'] = games[cid]['PGN'] + "\n" + str(games[cid]['Count']) + ". " + move
     check_draw, draw_type = is_a_draw(games[cid]['Board'])
     if check_draw:
         bot.send_message(message.chat.id, f"Draw: {draw_type}")
+        games[cid]['PGN'] = games[cid]['PGN'] + " { The game is a draw. } 1/2-1/2"
         games[cid]['Board'].set_fen(chess.STARTING_FEN)
         return
 
     if games[cid]['Board'].is_checkmate():
         bot.send_message(message.chat.id, "Game Over - You won!")
+        games[cid]['PGN'] = games[cid]['PGN'] + " { White wins by checkmate. } 1-0"
         games[cid]['Board'].set_fen(chess.STARTING_FEN)
         return
     
@@ -167,17 +185,20 @@ def make_move(message):
 
         move = analysis.info['pv'][0]
     move_san = games[cid]['Board'].san(move)
-
-    move_san = games[cid]['Board'].san(move)
+    
     games[cid]['Board'].push(move)
+    games[cid]['PGN'] = games[cid]['PGN'] + " " + move_san
+
     # node = node.add_variation(chess.Move.from_uci(move))
     bot.send_message(message.chat.id, f"Bot moves {str(move_san)}")
     if check_draw:
         bot.send_message(message.chat.id, f"Draw: {draw_type}")
+        games[cid]['PGN'] = games[cid]['PGN'] + " { The game is a draw. } 1/2-1/2"
         games[cid]['Board'].set_fen(chess.STARTING_FEN)
         return
     if games[cid]['Board'].is_checkmate():
         bot.send_message(message.chat.id, "Game Over - You lost :(")
+        games[cid]['PGN'] = games[cid]['PGN'] + " { Black wins by checkmate. } 0-1"
         games[cid]['Board'].set_fen(chess.STARTING_FEN)
         return
 
@@ -200,6 +221,7 @@ def show_board(message):
 def resign(message):
     cid = message.chat.id
     bot.send_message(message.chat.id, "Too bad :(")
+    games[cid]['PGN'] = games[cid]['PGN'] + " { White resigns. } 0-1"
     games[cid]['Board'].set_fen(chess.STARTING_FEN)
 
 # Start the bot
