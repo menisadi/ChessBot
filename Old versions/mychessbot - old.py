@@ -1,7 +1,6 @@
 import telebot
 import os
 import random 
-import stat
 import io
 from datetime import date
 
@@ -11,11 +10,15 @@ import chess.engine
 import chess.pgn
 import chess.svg
 
-# Import the package which handles the graphics
+os.environ['path'] += r';C:\Drivers\vips-dev-8.13\bin'
+
+# package which handles the graphics
 import pyvips
 
-# Token is stored locally for security reasons 
-# Read the entire contents of the file as a string
+# print(os.environ['path'])
+
+# Token is stored locally for security resaons 
+# Open the token file in reading mode
 with open('token.txt', 'r') as file:
   # Read the entire contents of the file as a string
   TOKEN = file.read()
@@ -27,12 +30,9 @@ bot = telebot.TeleBot(TOKEN)
 games = {}
 
 # Initiate engine
-# Download the engine file you wish to use and change this variable to its file name accordingly.
-engine_path = 'stockfish_15.exe'
-# Sometimes there are permission issues. If so, uncomment this.
-# os.chmod(engine_path, stat.S_IRUSR | stat.S_IXUSR)
-
-engine = chess.engine.SimpleEngine.popen_uci(engine_path)
+# TODO - can we put this somehow in a function?
+engine_file = "stockfish_15.exe"
+engine = chess.engine.SimpleEngine.popen_uci(engine_file)
 
 # Define a handler for the /help command
 @bot.message_handler(commands=["help"])
@@ -43,9 +43,8 @@ def show_help(message):
         "/help": "Show all the available commands",
         "/resign": "Resign :(",
         "/random": "Bot will make random moves",
-        "/stockfish": "Play against Stockfish engine (add a number [0-20] to limit its strength",
+        "/stockfish": "Play against Stockfish engine (add a number to limit its strength",
         "/moves": "Show a list of legal moves",
-        "/pgn": "Show game in PGN format",
         "/fen": "Print a FEN representation of the current board",
         "/show": "Show the board (using piece-letters on a 8x8 textual matrix)"
     }
@@ -89,9 +88,6 @@ def start_game(message):
         games[cid]['PGN'] = ""
 
     games[cid]['Board'].set_fen(chess.STARTING_FEN)
-    games[cid]['Count'] = 0
-    games[cid]['PGN'] = ""
-    games[cid]['Ended'] = False
 
 @bot.message_handler(commands=['stockfish'])
 def stockfish(message):
@@ -109,8 +105,8 @@ def stockfish(message):
 def random_mode(message):
     cid = message.chat.id
     games[cid]['Engine'] = 'random'
-    bot.send_message(message.chat.id, 'Random move activated')
-  
+    bot.send_message(message.chat.id, f'Random move activated')
+
 @bot.message_handler(commands=['fen'])
 def fen(message):
     cid = message.chat.id
@@ -139,6 +135,7 @@ def pgn(message):
     # Send the pgn to the user
     bot.send_message(message.chat.id, game_pgn)
 
+
 @bot.message_handler(func=lambda message: not message.text.startswith('/'))
 def make_move(message):
     # Parse the move from the message
@@ -148,17 +145,16 @@ def make_move(message):
     legal_move = False
     while legal_move == False:
         try:
-            if not games[cid]['Ended']:
+            try:
                 games[cid]['Board'].push_san(move)
-            else: # If user played a move without first pushing /start
+            except KeyError: # If user played a move without first pushing /start
                 games[cid] = dict()
                 games[cid]['Board'] = chess.Board()
                 games[cid]['Engine'] = 'random'
                 games[cid]['Count'] = 0
-                games[cid]['PGN'] = ""  
+                games[cid]['PGN'] = ""              
                 games[cid]['Board'].set_fen(chess.STARTING_FEN)                
                 games[cid]['Board'].push_san(move)
-                games[cid]['Ended'] = False
             legal_move = True
             # node = node.add_variation(chess.Move.from_uci(move))
         except ValueError:
@@ -166,57 +162,50 @@ def make_move(message):
             return
     
     games[cid]['Count'] = games[cid]['Count'] + 1
-    # print(games[cid]['Count'])
-    games[cid]['PGN'] = games[cid]['PGN'] + "\n" + str(games[cid]['Count']) + ". " + move    
-    # print(chess.pgn.read_game(io.StringIO(games[cid]['PGN']+'\n\n')))
+    games[cid]['PGN'] = games[cid]['PGN'] + "\n" + str(games[cid]['Count']) + ". " + move
     check_draw, draw_type = is_a_draw(games[cid]['Board'])
     if check_draw:
         bot.send_message(message.chat.id, f"Draw: {draw_type}")
-        games[cid]['PGN'] = games[cid]['PGN'] + " { The game is a draw. } 1/2-1/2"      
+        games[cid]['PGN'] = games[cid]['PGN'] + " { The game is a draw. } 1/2-1/2"
         games[cid]['Board'].set_fen(chess.STARTING_FEN)
-        games[cid]['Ended'] = True
         return
 
     if games[cid]['Board'].is_checkmate():
         bot.send_message(message.chat.id, "Game Over - You won!")
         games[cid]['PGN'] = games[cid]['PGN'] + " { White wins by checkmate. } 1-0"
         games[cid]['Board'].set_fen(chess.STARTING_FEN)
-        games[cid]['Ended'] = True
         return
     
+
     move = random.choice(list(games[cid]['Board'].legal_moves))
     if games[cid]['Engine'] == 'stockfish':
-      move_time = random.uniform(0.5, 1.5)
-      with engine.analysis(games[cid]['Board'], chess.engine.Limit(time=(move_time))) as analysis:
-          for info in analysis:
-              pass
+        with engine.analysis(games[cid]['Board'], chess.engine.Limit(time=(1.5))) as analysis:
+            for info in analysis:
+                pass
 
-      move = analysis.info['pv'][0]
-
+        move = analysis.info['pv'][0]
     move_san = games[cid]['Board'].san(move)
+    
     games[cid]['Board'].push(move)
     games[cid]['PGN'] = games[cid]['PGN'] + " " + move_san
+
+    # node = node.add_variation(chess.Move.from_uci(move))
     bot.send_message(message.chat.id, f"Bot moves {str(move_san)}")
     if check_draw:
         bot.send_message(message.chat.id, f"Draw: {draw_type}")
         games[cid]['PGN'] = games[cid]['PGN'] + " { The game is a draw. } 1/2-1/2"
-        games[cid]['Ended'] = True
         games[cid]['Board'].set_fen(chess.STARTING_FEN)
         return
     if games[cid]['Board'].is_checkmate():
         bot.send_message(message.chat.id, "Game Over - You lost :(")
         games[cid]['PGN'] = games[cid]['PGN'] + " { Black wins by checkmate. } 0-1"
-        games[cid]['Ended'] = True
         games[cid]['Board'].set_fen(chess.STARTING_FEN)
         return
 
 @bot.message_handler(commands=['show'])
 def show_board(message):
     cid = message.chat.id
-
-    # If the graphics is making problem use the following line as a temporary substitute
     # bot.send_message(message.chat.id, games[cid]['Board'])
-
     svgboard = chess.svg.board(games[cid]['Board'])
 
     with open('board.svg', 'w') as f:
@@ -233,8 +222,8 @@ def resign(message):
     cid = message.chat.id
     bot.send_message(message.chat.id, "Too bad :(")
     games[cid]['PGN'] = games[cid]['PGN'] + " { White resigns. } 0-1"
-    games[cid]['Ended'] = True
     games[cid]['Board'].set_fen(chess.STARTING_FEN)
 
 # Start the bot
+# keep_alive.keep_alive()
 bot.infinity_polling()
