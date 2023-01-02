@@ -208,7 +208,7 @@ def make_move(message):
 def show_board(message):
     cid = message.chat.id
 
-    If the graphics is making problem use the following line as a temporary substitute
+# If the graphics is making problem use the following line as a temporary substitute
     bot.send_message(message.chat.id, games[cid]['Board'])
 
 #     svgboard = chess.svg.board(games[cid]['Board'])
@@ -243,11 +243,9 @@ def gif(message):
         f.write(game_pgn_str) 
     creator = pgn2gif.PgnToGifCreator(reverse=False, duration=1, ws_color='white', bs_color='gray')
     creator.create_gif('game.pgn', out_path="game.gif")
-    with open("game.gif", "rb") as f:
-        gif_data = f.read()
-
+    gif_data = telebot.types.InputFile("game.gif") 
     # Send the gif to the user
-    bot.send_video(message.chat.id, gif_data, width=240, height=240)
+    bot.send_animation(message.chat.id, gif_data, width=240, height=240)
 
 
 @bot.message_handler(commands=['resign'])
