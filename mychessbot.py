@@ -13,7 +13,8 @@ import chess.svg
 import pgn2gif
 
 # Import the package which handles the graphics
-from cairosvg import svg2png
+# from cairosvg import svg2png
+from fentoboardimage import fenToImage, loadPiecesFolder
 
 # Token is stored locally for security reasons 
 # Read the entire contents of the file as a string
@@ -211,12 +212,18 @@ def show_board(message):
     # If the graphics is making problem use the following line as a temporary substitute
     # bot.send_message(message.chat.id, games[cid]['Board'])
 
-    svgboard = chess.svg.board(games[cid]['Board'])
-    svg2png(bytestring=svgboard,write_to='board.png', output_height=180, output_width=180)
+    # svgboard = chess.svg.board(games[cid]['Board'])
+    # svg2png(bytestring=svgboard,write_to='board.png', output_height=180, output_width=180)
 
-    with open("board.png", 'rb') as bf:
-        bot.send_photo(message.chat.id, photo=bf)
- 
+    # with open("board.png", 'rb') as bf:
+    #     bot.send_photo(message.chat.id, photo=bf)
+    board_image_PIL = fenToImage(fen=games[cid]['Board'].fen(), 
+            darkColor="#D18B47",
+            lightColor="#FFCE9E", 
+            squarelength=40, pieceSet=loadPiecesFolder("./staunty"))
+    # board_image_PIL.save()
+    bot.send_photo(message.chat.id, photo=board_image_PIL)
+
 
 def finalize_pgn(pgn_str):
     final_pgn = pgn_str + '\n\n'
