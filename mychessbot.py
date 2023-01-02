@@ -10,9 +10,10 @@ import chess
 import chess.engine
 import chess.pgn
 import chess.svg
+import pgn2gif
 
 # Import the package which handles the graphics
-import pyvips
+# import pyvips
 
 # Token is stored locally for security reasons 
 # Read the entire contents of the file as a string
@@ -129,15 +130,8 @@ def legal_moves(message):
 @bot.message_handler(commands=['pgn'])
 def pgn(message):
     cid = message.chat.id
-    final_pgn = games[cid]['PGN'] + '\n\n'
-    game_pgn = chess.pgn.read_game(io.StringIO(final_pgn))
-    game_pgn.headers["Event"] = 'Blind-chess match'
-    game_pgn.headers["Site"] = 'Telegram'
-    game_pgn.headers["White"] = 'Me'
-    game_pgn.headers["Black"] = 'Telegram Bot'
-    game_pgn.headers["Date"] = date.today()
     # Send the pgn to the user
-    bot.send_message(message.chat.id, game_pgn)
+    bot.send_message(message.chat.id, finalize_pgn(games[cid]['PGN']))
 
 @bot.message_handler(func=lambda message: not message.text.startswith('/'))
 def make_move(message):
@@ -214,19 +208,47 @@ def make_move(message):
 def show_board(message):
     cid = message.chat.id
 
-    # If the graphics is making problem use the following line as a temporary substitute
-    # bot.send_message(message.chat.id, games[cid]['Board'])
+    If the graphics is making problem use the following line as a temporary substitute
+    bot.send_message(message.chat.id, games[cid]['Board'])
 
-    svgboard = chess.svg.board(games[cid]['Board'])
+#     svgboard = chess.svg.board(games[cid]['Board'])
 
-    with open('board.svg', 'w') as f:
-        f.write(svgboard)
-    image = pyvips.Image.thumbnail("board.svg", 200)
-    image.write_to_file("board.png")
-    photo = open("board.png",'rb')
+#     with open('board.svg', 'w') as f:
+#         f.write(svgboard)
+#     image = pyvips.Image.thumbnail("board.svg", 200)
+#     image.write_to_file("board.png")
+#     photo = open("board.png",'rb')
 
-    # Send the updated board to the user
-    bot.send_photo(message.chat.id, photo=photo)
+#     # Send the updated board to the user
+#     bot.send_photo(message.chat.id, photo=photo)
+
+def finalize_pgn(pgn_str):
+    final_pgn = pgn_str + '\n\n'
+    # print(final_pgn)
+    game_pgn = chess.pgn.read_game(io.StringIO(final_pgn))
+    # print(type(game_pgn))
+    # print(game_pgn)
+    game_pgn.headers["Event"] = 'Blind-chess match'
+    game_pgn.headers["Site"] = 'Telegram'
+    game_pgn.headers["White"] = 'Me'
+    game_pgn.headers["Black"] = 'Telegram Bot'
+    game_pgn.headers["Date"] = date.today()
+    return game_pgn
+
+@bot.message_handler(commands=['gif'])
+def gif(message):
+    cid = message.chat.id
+    game_pgn_str = str(finalize_pgn(games[cid]['PGN']))
+    with open('game.pgn', 'w') as f:
+        f.write(game_pgn_str) 
+    creator = pgn2gif.PgnToGifCreator(reverse=False, duration=1, ws_color='white', bs_color='gray')
+    creator.create_gif('game.pgn', out_path="game.gif")
+    with open("game.gif", "rb") as f:
+        gif_data = f.read()
+
+    # Send the gif to the user
+    bot.send_video(message.chat.id, gif_data, width=240, height=240)
+
 
 @bot.message_handler(commands=['resign'])
 def resign(message):

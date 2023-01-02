@@ -14,6 +14,7 @@ To run locally:
 6. Play :)
 
 
-# Libraries used
+# Main Libraries used
 - [pyTelegramBotAPI - A simple, but extensible Python implementation for the Telegram Bot API](https://github.com/eternnoir/pyTelegramBotAPI)
 - [python-chess: a chess library for Python](https://github.com/niklasf/python-chess)
+- [pgn2gif](https://github.com/dn1z/pgn2gif)

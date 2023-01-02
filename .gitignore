@@ -1,2 +1,6 @@
 *.exe
 token.txt
+*.png
+*.gif
+*.pgn
+pgn2gif-master/
