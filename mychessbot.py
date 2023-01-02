@@ -13,7 +13,7 @@ import chess.svg
 import pgn2gif
 
 # Import the package which handles the graphics
-# import pyvips
+from cairosvg import svg2png
 
 # Token is stored locally for security reasons 
 # Read the entire contents of the file as a string
@@ -208,19 +208,15 @@ def make_move(message):
 def show_board(message):
     cid = message.chat.id
 
-# If the graphics is making problem use the following line as a temporary substitute
-    bot.send_message(message.chat.id, games[cid]['Board'])
+    # If the graphics is making problem use the following line as a temporary substitute
+    # bot.send_message(message.chat.id, games[cid]['Board'])
 
-#     svgboard = chess.svg.board(games[cid]['Board'])
+    svgboard = chess.svg.board(games[cid]['Board'])
+    svg2png(bytestring=svgboard,write_to='board.png', output_height=180, output_width=180)
 
-#     with open('board.svg', 'w') as f:
-#         f.write(svgboard)
-#     image = pyvips.Image.thumbnail("board.svg", 200)
-#     image.write_to_file("board.png")
-#     photo = open("board.png",'rb')
-
-#     # Send the updated board to the user
-#     bot.send_photo(message.chat.id, photo=photo)
+    with open("board.png", 'rb') as bf:
+        bot.send_photo(message.chat.id, photo=bf)
+ 
 
 def finalize_pgn(pgn_str):
     final_pgn = pgn_str + '\n\n'
