@@ -6,4 +6,4 @@
 [Black "Telegram Bot"]
 [Result "0-1"]
 
-1. d4 f5 2. c4 h6 { White resigns. } 0-1
+1. d4 c6 2. c4 b5 3. Nc3 Na6 4. Nf3 Nc5 5. dxc5 g5 { White resigns. } 0-1
