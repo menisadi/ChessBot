@@ -13,7 +13,6 @@ import chess.svg
 import pgn2gif
 
 # Import the package which handles the graphics
-# from cairosvg import svg2png
 from fentoboardimage import fenToImage, loadPiecesFolder
 
 # Token is stored locally for security reasons 
@@ -244,7 +243,7 @@ def gif(message):
     game_pgn_str = str(finalize_pgn(games[cid]['PGN']))
     with open('game.pgn', 'w') as f:
         f.write(game_pgn_str) 
-    creator = pgn2gif.PgnToGifCreator(reverse=False, duration=1, ws_color='white', bs_color='gray')
+    creator = pgn2gif.PgnToGifCreator(reverse=False, duration=1, ws_color='#B58962', bs_color='#F1D9B5')
     creator.create_gif('game.pgn', out_path="game.gif")
     gif_data = telebot.types.InputFile("game.gif") 
     # Send the gif to the user
