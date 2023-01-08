@@ -1,7 +1,7 @@
 *.exe
 token.txt
 *.png
-!figures/*.png
+!Graphics/*.png
 !staunty/black/*.png
 !staunty/white/*.png
 *.gif

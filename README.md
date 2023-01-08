@@ -2,7 +2,7 @@
 
 A Telegram text-based chat bot.
 
-![ChessBot banner](banner.png)
+![ChessBot banner](Graphics/banner.png)
 
 ## Requirements
 
@@ -41,5 +41,5 @@ A Telegram text-based chat bot.
 
 This project is licensed under GNU GPL v3 License - see the [LICENSE](LICENSE) file for details.  
 
-<img src="gplv3.png" alt="drawing" width="20"/>
+<img src="Graphics/gplv3.png" alt="drawing" width="20"/>
 
