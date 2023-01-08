@@ -1,21 +1,14 @@
-<h1 align="center">
-  <br>
-  BlindChessBot
-  </br>
-</h1>
-<h4 align="center">A Telegram text-based chat bot</h4>
+# ChessBot
 
-<div align="center">
-  
-    ![ChessBot banner](banner.png)
 
-</div>
-<div align="center">
+![ChessBot banner](banner.png)
 
-    [![HitCount](http://hits.dwyl.com/menisadi/ChessBot.svg)](http://hits.dwyl.com/menisadi/ChessBot)
-    [![License][license-badge]][license-link]
-  
-</div>
+[![HitCount](http://hits.dwyl.com/menisadi/ChessBot.svg)](http://hits.dwyl.com/menisadi/ChessBot)
+[![Known Vulnerabilities](https://snyk.io/test/github/menisadi/ChessBot/badge.svg)]
+
+
+A chat bot that allows users to play chess via a messaging platform.
+
 
 ## Requirements
 
