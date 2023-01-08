@@ -1,7 +1,7 @@
 # ChessBot
 
 
-![ChessBot banner](banner.png)
+![ChessBot banner](Graphic/banner.png)
 
 [![HitCount](http://hits.dwyl.com/menisadi/ChessBot.svg)](http://hits.dwyl.com/menisadi/ChessBot)
 [![Known Vulnerabilities](https://snyk.io/test/github/menisadi/ChessBot/badge.svg)]
