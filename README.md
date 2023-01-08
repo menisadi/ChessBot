@@ -1,8 +1,12 @@
-# ChessBot
+<h1 align="center">
+  <br>
+  BlindChessBot
+  </br>
+</h1>
+<h4 align="center">A Telegram text-based chat bot</h4>
 
-A Telegram text-based chat bot.
-    <div align="center">
-    <img src="Graphics\banner.pn" alt="Logo" width="200"/>
+<div align="center">
+    ![ChessBot banner](Graphics/banner.png)
     <br>
     [![HitCount](http://hits.dwyl.com/menisadi/ChessBot.svg)](http://hits.dwyl.com/menisadi/ChessBot)
     [![License][license-badge]][license-link]
