@@ -6,10 +6,12 @@
 <h4 align="center">A Telegram text-based chat bot</h4>
 
 <div align="center">
-    ![ChessBot banner](Graphics/banner.png)
+  
+    [![ChessBot banner][Graphics/banner]][website-link]
     <br>
     [![HitCount](http://hits.dwyl.com/menisadi/ChessBot.svg)](http://hits.dwyl.com/menisadi/ChessBot)
     [![License][license-badge]][license-link]
+  
 </div>
 
 ## Requirements
