@@ -1,8 +1,12 @@
 # ChessBot
 
 A Telegram text-based chat bot.
-
-![ChessBot banner](Graphics/banner.png)
+    <div align="center">
+    <img src="Graphics/banner.pn" alt="Logo" width="200"/>
+    <br>
+    [![HitCount](http://hits.dwyl.com/menisadi/ChessBot.svg)](http://hits.dwyl.com/menisadi/ChessBot)
+    [![License][license-badge]][license-link]
+</div>
 
 ## Requirements
 
