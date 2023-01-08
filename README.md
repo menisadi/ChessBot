@@ -7,8 +7,11 @@
 
 <div align="center">
   
-    [![ChessBot banner][Graphics/banner]][website-link]
-    <br>
+    ![ChessBot banner](banner.png)
+
+</div>
+<div align="center">
+
     [![HitCount](http://hits.dwyl.com/menisadi/ChessBot.svg)](http://hits.dwyl.com/menisadi/ChessBot)
     [![License][license-badge]][license-link]
   
