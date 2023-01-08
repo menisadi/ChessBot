@@ -1,11 +1,10 @@
 # ChessBot
 
 
-![ChessBot banner](Graphic/banner.png)
+![ChessBot banner](Graphics/banner.png)
 
 [![HitCount](http://hits.dwyl.com/menisadi/ChessBot.svg)](http://hits.dwyl.com/menisadi/ChessBot)
-[![Known Vulnerabilities](https://snyk.io/test/github/menisadi/ChessBot/badge.svg)](https://snyk.io/test/github/menisadi/ChessBot)
-
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 A chat bot that allows users to play chess via a messaging platform.
 
