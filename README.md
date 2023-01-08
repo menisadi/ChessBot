@@ -1,4 +1,4 @@
-# ChessBot
+# BlindChessBot
 
 
 ![ChessBot banner](Graphics/banner.png)
