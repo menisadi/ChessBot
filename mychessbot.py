@@ -1,4 +1,5 @@
 import telebot
+from telebot import types
 import os
 import random 
 import stat
@@ -11,6 +12,7 @@ import chess.engine
 import chess.pgn
 import chess.svg
 import pgn2gif
+from numpy.random import randint
 
 # Import the package which handles the graphics
 from fentoboardimage import fenToImage, loadPiecesFolder
@@ -26,6 +28,12 @@ bot = telebot.TeleBot(TOKEN)
 
 # Create a dictionary to store the chess game of each user
 games = {}
+
+color_keyboard = types.InlineKeyboardMarkup()
+white_button = types.InlineKeyboardButton("White", callback_data='color_white')
+black_button = types.InlineKeyboardButton("Black", callback_data='color_black')
+random_button = types.InlineKeyboardButton("Random", callback_data='color_random')
+color_keyboard.add(white_button, black_button, random_button)
 
 # Initiate engine
 # Download the engine file you wish to use and change this variable to its file name accordingly.
@@ -88,12 +96,99 @@ def start_game(message):
         games[cid]['Engine'] = 'random'
         games[cid]['Count'] = 0
         games[cid]['PGN'] = ""
+        games[cid]['Color'] = chess.WHITE
+        games[cid]['Turn'] = chess.WHITE
 
     games[cid]['Board'].set_fen(chess.STARTING_FEN)
     games[cid]['Count'] = 0
     games[cid]['PGN'] = ""
     games[cid]['Ended'] = False
+    games[cid]['Turn'] = chess.WHITE
 
+    bot.send_message(message.chat.id, "Please select your color:", reply_markup=color_keyboard)
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith('color'))
+def handle_color_callback(call):
+    chosen_color = call.data.split("_")[-1]
+    chosen_color_bool = string_color_to_bool_color(chosen_color)
+    games[call.message.chat.id]['Color'] = chosen_color_bool
+    if chosen_color_bool==chess.WHITE:
+        bot.send_message(call.message.chat.id, f'You will be playing white')
+    else:
+        bot.send_message(call.message.chat.id, f'You will be playing black')
+        bot_makes_a_move(call.message.chat.id)
+
+def bot_makes_a_move(cid):
+    move = random.choice(list(games[cid]['Board'].legal_moves))
+    if games[cid]['Engine'] == 'stockfish':
+      move_time = random.uniform(0.5, 1.5)
+      with engine.analysis(games[cid]['Board'], chess.engine.Limit(time=(move_time))) as analysis:
+          for info in analysis:
+              pass
+
+      move = analysis.info['pv'][0]
+
+    move_san = games[cid]['Board'].san(move)
+    games[cid]['Board'].push(move)
+    if games[cid]['Turn'] == chess.WHITE:
+        games[cid]['Count'] = games[cid]['Count'] + 1
+        games[cid]['PGN'] = games[cid]['PGN'] + "\n" + str(games[cid]['Count']) + ". " + move_san    
+    else:
+        games[cid]['PGN'] = games[cid]['PGN'] + " " + move_san
+    bot.send_message(cid, f"Bot moves {str(move_san)}")
+    check_draw, draw_type = is_a_draw(games[cid]['Board'])
+    if check_draw:
+        bot.send_message(cid, f"Draw: {draw_type}")
+        games[cid]['PGN'] = games[cid]['PGN'] + " { The game is a draw. } 1/2-1/2"
+        games[cid]['Ended'] = True
+        games[cid]['Board'].set_fen(chess.STARTING_FEN)
+        return
+    if games[cid]['Board'].is_checkmate():
+        bot.send_message(cid, "Game Over - You lost :(")
+        games[cid]['PGN'] = games[cid]['PGN'] + " { Black wins by checkmate. } 0-1"
+        games[cid]['Ended'] = True
+        games[cid]['Board'].set_fen(chess.STARTING_FEN)
+        return
+    games[cid]['Turn'] = not games[cid]['Turn']
+    
+
+def string_color_to_bool_color(color_s):
+    if color_s == 'white':
+        return True
+    elif color_s == 'black':
+        return False
+    else:
+        return bool(randint(0,2))
+    
+def bool_color_to_string(color_b):
+    if color_b:
+        return "white"
+    else:
+        return "black"
+
+# @bot.message_handler(commands=['color'])
+# def stockfish(message):
+#     cid = message.chat.id
+#     try:
+#         color_pick = message.text.split()[1]
+#     except:
+#         color_pick = 'random'
+#     color = string_color_to_bool_color(color_pick)
+#     games[cid]['Color'] = color
+#     bot.send_message(message.chat.id, f'You will be playing {bool_color_to_string(color)}')
+
+#     if color==chess.BLACK:
+#         games[cid] = dict()
+#         games[cid]['Board'] = chess.Board()
+#         games[cid]['Engine'] = 'random'
+#         games[cid]['Count'] = 0
+#         games[cid]['PGN'] = ""  
+#         games[cid]['Board'].set_fen(chess.STARTING_FEN)                
+#         games[cid]['Ended'] = False
+            
+#         bot_makes_a_move(message.chat.id)
+
+    
 @bot.message_handler(commands=['stockfish'])
 def stockfish(message):
     cid = message.chat.id
@@ -131,7 +226,7 @@ def legal_moves(message):
 def pgn(message):
     cid = message.chat.id
     # Send the pgn to the user
-    bot.send_message(message.chat.id, finalize_pgn(games[cid]['PGN']))
+    bot.send_message(message.chat.id, finalize_pgn(games[cid]['PGN'], games[cid]['Color']))
 
 @bot.message_handler(func=lambda message: not message.text.startswith('/'))
 def make_move(message):
@@ -153,16 +248,20 @@ def make_move(message):
                 games[cid]['Board'].set_fen(chess.STARTING_FEN)                
                 games[cid]['Board'].push_san(move)
                 games[cid]['Ended'] = False
+                games[cid]['Color'] = chess.WHITE
+                games[cid]['Turn'] = chess.WHITE
             legal_move = True
             # node = node.add_variation(chess.Move.from_uci(move))
         except ValueError:
             bot.send_message(message.chat.id, f"{move} is not a legal move.")
             return
     
-    games[cid]['Count'] = games[cid]['Count'] + 1
-    # print(games[cid]['Count'])
-    games[cid]['PGN'] = games[cid]['PGN'] + "\n" + str(games[cid]['Count']) + ". " + move    
-    # print(chess.pgn.read_game(io.StringIO(games[cid]['PGN']+'\n\n')))
+    if games[cid]['Turn'] == chess.WHITE:
+        games[cid]['Count'] = games[cid]['Count'] + 1
+        games[cid]['PGN'] = games[cid]['PGN'] + "\n" + str(games[cid]['Count']) + ". " + move    
+    else:
+        games[cid]['PGN'] = games[cid]['PGN'] + " " + move
+
     check_draw, draw_type = is_a_draw(games[cid]['Board'])
     if check_draw:
         bot.send_message(message.chat.id, f"Draw: {draw_type}")
@@ -177,32 +276,8 @@ def make_move(message):
         games[cid]['Board'].set_fen(chess.STARTING_FEN)
         games[cid]['Ended'] = True
         return
-    
-    move = random.choice(list(games[cid]['Board'].legal_moves))
-    if games[cid]['Engine'] == 'stockfish':
-      move_time = random.uniform(0.5, 1.5)
-      with engine.analysis(games[cid]['Board'], chess.engine.Limit(time=(move_time))) as analysis:
-          for info in analysis:
-              pass
-
-      move = analysis.info['pv'][0]
-
-    move_san = games[cid]['Board'].san(move)
-    games[cid]['Board'].push(move)
-    games[cid]['PGN'] = games[cid]['PGN'] + " " + move_san
-    bot.send_message(message.chat.id, f"Bot moves {str(move_san)}")
-    if check_draw:
-        bot.send_message(message.chat.id, f"Draw: {draw_type}")
-        games[cid]['PGN'] = games[cid]['PGN'] + " { The game is a draw. } 1/2-1/2"
-        games[cid]['Ended'] = True
-        games[cid]['Board'].set_fen(chess.STARTING_FEN)
-        return
-    if games[cid]['Board'].is_checkmate():
-        bot.send_message(message.chat.id, "Game Over - You lost :(")
-        games[cid]['PGN'] = games[cid]['PGN'] + " { Black wins by checkmate. } 0-1"
-        games[cid]['Ended'] = True
-        games[cid]['Board'].set_fen(chess.STARTING_FEN)
-        return
+    games[cid]['Turn'] = not games[cid]['Turn']
+    bot_makes_a_move(cid)
 
 @bot.message_handler(commands=['show'])
 def show_board(message):
@@ -219,12 +294,13 @@ def show_board(message):
     board_image_PIL = fenToImage(fen=games[cid]['Board'].fen(), 
             darkColor="#D18B47",
             lightColor="#FFCE9E", 
-            squarelength=40, pieceSet=loadPiecesFolder("./staunty"))
+            squarelength=40, pieceSet=loadPiecesFolder("./staunty"),
+            flipped = not games[cid]['Color'])
     # board_image_PIL.save()
     bot.send_photo(message.chat.id, photo=board_image_PIL)
 
 
-def finalize_pgn(pgn_str):
+def finalize_pgn(pgn_str, player_color):
     final_pgn = pgn_str + '\n\n'
     # print(final_pgn)
     game_pgn = chess.pgn.read_game(io.StringIO(final_pgn))
@@ -232,18 +308,22 @@ def finalize_pgn(pgn_str):
     # print(game_pgn)
     game_pgn.headers["Event"] = 'Blind-chess match'
     game_pgn.headers["Site"] = 'Telegram'
-    game_pgn.headers["White"] = 'Me'
-    game_pgn.headers["Black"] = 'Telegram Bot'
+    if player_color==chess.WHITE:
+        game_pgn.headers["White"] = 'Me'
+        game_pgn.headers["Black"] = 'Telegram Bot'
+    else:
+        game_pgn.headers["White"] = 'Telegram Bot'
+        game_pgn.headers["Black"] = 'Me'
     game_pgn.headers["Date"] = date.today()
     return game_pgn
 
 @bot.message_handler(commands=['gif'])
 def gif(message):
     cid = message.chat.id
-    game_pgn_str = str(finalize_pgn(games[cid]['PGN']))
+    game_pgn_str = str(finalize_pgn(games[cid]['PGN'], games[cid]['Color']))
     with open('game.pgn', 'w') as f:
         f.write(game_pgn_str) 
-    creator = pgn2gif.PgnToGifCreator(reverse=False, duration=1, ws_color='#B58962', bs_color='#F1D9B5')
+    creator = pgn2gif.PgnToGifCreator(reverse = not games[cid]['Color'], duration=1, ws_color='#B58962', bs_color='#F1D9B5')
     creator.create_gif('game.pgn', out_path="game.gif")
     gif_data = telebot.types.InputFile("game.gif") 
     # Send the gif to the user
@@ -253,8 +333,9 @@ def gif(message):
 @bot.message_handler(commands=['resign'])
 def resign(message):
     cid = message.chat.id
-    bot.send_message(message.chat.id, "Too bad :(")
-    games[cid]['PGN'] = games[cid]['PGN'] + " { White resigns. } 0-1"
+    bot.send_message(message.chat.id, "Too bad")
+    result = "0-1"[::(2*games[cid]['Color']-1)]
+    games[cid]['PGN'] = games[cid]['PGN'] + " { " + bool_color_to_string(games[cid]['Color']) + " resigns. } " + result
     games[cid]['Ended'] = True
     games[cid]['Board'].set_fen(chess.STARTING_FEN)
 
