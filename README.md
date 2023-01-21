@@ -1,8 +1,13 @@
-# ChessBot
+# BlindChessBot
 
-A Telegram text-based chat bot.
 
 ![ChessBot banner](Graphics/banner.png)
+
+[![HitCount](http://hits.dwyl.com/menisadi/ChessBot.svg)](http://hits.dwyl.com/menisadi/ChessBot)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+A chat bot that allows users to play chess via a messaging platform.
+
 
 ## Requirements
 
@@ -29,6 +34,8 @@ A Telegram text-based chat bot.
 - `<move>` - make a move on the chess board (in standard algebraic notation e.g. `e4`, `Nxe4`, `a8=Q`)
 - `/moves` - show a list of legal move
 - `/resign` - resign from the current game
+- `/stockfish` -  Play against Stockfish engine (add a number [0-20] to limit its strength). [binary file](https://stockfishchess.org/download/) of Stockfish is not included so you need to download it and add to your local folder
+- `/random` - Bot will make random moves
 - `/show` - show the board
 - `/pgn` - print the entire game in PGN format
 
