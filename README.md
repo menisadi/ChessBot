@@ -25,7 +25,7 @@ A chat bot that allows users to play chess via a messaging platform.
     cd ChessBot
     ```
 3. Create a file named `token.txt` and paste in it your API token.
-4. Run the script: `python3 mychessbot.py`
+4. Run the script: `python3 bot.py`
 
 ## Usage
 
