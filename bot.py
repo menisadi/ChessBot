@@ -434,4 +434,4 @@ def gif(message):
 
 
 # Start the bot
-# bot.infinity_polling()
+bot.infinity_polling()
