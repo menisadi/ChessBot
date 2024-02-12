@@ -21,9 +21,12 @@ import chess.svg
 
 # Token is stored locally for security reasons
 # Read the entire contents of the file as a string
-with open("token.txt", "r") as file:
-    # Read the entire contents of the file as a string
-    TOKEN = file.read().strip()
+# with open("token.txt", "r") as file:
+#     # Read the entire contents of the file as a string
+#     TOKEN = file.read().strip()
+
+# TOKEN is stored as a environment variable
+TOKEN = os.environ["BOT_TOKEN"]
 
 # Create the bot using the token provided by the BotFather
 bot = telebot.TeleBot(TOKEN)
