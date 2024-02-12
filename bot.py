@@ -28,7 +28,6 @@ import chess.svg
 # TOKEN is stored as a environment variable
 TOKEN = os.environ["BOT_TOKEN"]
 
-# Create the bot using the token provided by the BotFather
 bot = telebot.TeleBot(TOKEN)
 
 # Create a dictionary to store the chess game of each user
