@@ -54,8 +54,8 @@ engine_keyboard.add(stockfish_engine_button, random_engine_button)
 # Initiate engine
 # TODO - can we put this somehow in a function?
 # engine_file = "stockfish_15.exe"
-engine_path = "Engines/stockfish-191-64-ja"
-# engine_path = "Engines/stockfish_14_x64"
+# engine_path = "Engines/stockfish-191-64-ja"
+engine_path = "Engines/stockfish_14_x64"
 # engine_path = "Engines/stockfish-macos-x86-64-modern"
 os.chmod(engine_path, stat.S_IRUSR | stat.S_IXUSR)
 engine = chess.engine.SimpleEngine.popen_uci(engine_path)
