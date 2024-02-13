@@ -67,12 +67,12 @@ engine_keyboard.add(
 
 # Initiate engine
 # TODO - can we put this somehow in a function?
-# engine_path = "Engines/stockfish-191-64-ja"
+engine_path = "Engines/stockfish_8_x64"
 # engine_path = "Engines/stockfish_14_x64"
 # engine_path = "Engines/stockfish-ubuntu-x86-64-modern"
 # engine_path = "Engines/stockfish-macos-x86-64-modern"
-# os.chmod(engine_path, stat.S_IRUSR | stat.S_IXUSR)
-# engine = chess.engine.SimpleEngine.popen_uci(engine_path)
+os.chmod(engine_path, stat.S_IRUSR | stat.S_IXUSR)
+engine = chess.engine.SimpleEngine.popen_uci(engine_path)
 
 # diff = 1
 # engine.configure({"Skill Level": diff})
