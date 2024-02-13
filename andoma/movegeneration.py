@@ -2,13 +2,13 @@ from typing import Dict, List, Any
 import chess
 import sys
 import time
-from evaluate import evaluate_board, move_value, check_end_game
+from andoma.evaluate import evaluate_board, move_value, check_end_game
 
 debug_info: Dict[str, Any] = {}
 
 
-MATE_SCORE     = 1000000000
-MATE_THRESHOLD =  999000000
+MATE_SCORE = 1000000000
+MATE_THRESHOLD = 999000000
 
 
 def next_move(depth: int, board: chess.Board, debug=True) -> chess.Move:
@@ -66,7 +66,9 @@ def minimax_root(depth: int, board: chess.Board) -> chess.Move:
         if board.can_claim_draw():
             value = 0.0
         else:
-            value = minimax(depth - 1, board, -float("inf"), float("inf"), not maximize)
+            value = minimax(
+                depth - 1, board, -float("inf"), float("inf"), not maximize
+            )
         board.pop()
         if maximize and value >= best_move:
             best_move = value
@@ -107,7 +109,9 @@ def minimax(
         moves = get_ordered_moves(board)
         for move in moves:
             board.push(move)
-            curr_move = minimax(depth - 1, board, alpha, beta, not is_maximising_player)
+            curr_move = minimax(
+                depth - 1, board, alpha, beta, not is_maximising_player
+            )
             # Each ply after a checkmate is slower, so they get ranked slightly less
             # We want the fastest mate!
             if curr_move > MATE_THRESHOLD:
@@ -128,7 +132,9 @@ def minimax(
         moves = get_ordered_moves(board)
         for move in moves:
             board.push(move)
-            curr_move = minimax(depth - 1, board, alpha, beta, not is_maximising_player)
+            curr_move = minimax(
+                depth - 1, board, alpha, beta, not is_maximising_player
+            )
             if curr_move > MATE_THRESHOLD:
                 curr_move -= 1
             elif curr_move < -MATE_THRESHOLD:
