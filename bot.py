@@ -21,6 +21,8 @@ import chess.engine
 import chess.pgn
 import chess.svg
 
+from andoma.movegeneration import next_move as andoma_gen
+
 project_folder = os.path.expanduser(".")  # adjust as appropriate
 load_dotenv(os.path.join(project_folder, ".env"))
 
@@ -54,17 +56,23 @@ stockfish_engine_button = types.InlineKeyboardButton(
 random_engine_button = types.InlineKeyboardButton(
     "Random", callback_data="engine_random"
 )
+andoma_engine_button = types.InlineKeyboardButton(
+    "Andoma", callback_data="engine_andoma"
+)
 
-engine_keyboard.add(stockfish_engine_button, random_engine_button)
+engine_keyboard.add(
+    stockfish_engine_button, andoma_engine_button, random_engine_button
+)
 
 # Initiate engine
 # TODO - can we put this somehow in a function?
 # engine_path = "Engines/stockfish-191-64-ja"
 # engine_path = "Engines/stockfish_14_x64"
-engine_path = "Engines/stockfish-ubuntu-x86-64-modern"
+# engine_path = "Engines/stockfish-ubuntu-x86-64-modern"
 # engine_path = "Engines/stockfish-macos-x86-64-modern"
-os.chmod(engine_path, stat.S_IRUSR | stat.S_IXUSR)
-engine = chess.engine.SimpleEngine.popen_uci(engine_path)
+# os.chmod(engine_path, stat.S_IRUSR | stat.S_IXUSR)
+# engine = chess.engine.SimpleEngine.popen_uci(engine_path)
+
 # diff = 1
 # engine.configure({"Skill Level": diff})
 
@@ -183,7 +191,9 @@ def handle_engine_callback(call):
 
 def bot_makes_a_move(cid):
     move = random.choice(list(games[cid]["Board"].legal_moves))
-    if games[cid]["Engine"] == "stockfish":
+    if games[cid]["Engine"] == "andoma":
+        move = andoma_gen(depth=4, board=games[cid]["Board"], debug=False)
+    elif games[cid]["Engine"] == "stockfish":
         move_time = random.uniform(0.5, 1.5)
         with engine.analysis(
             games[cid]["Board"], chess.engine.Limit(time=(move_time))
