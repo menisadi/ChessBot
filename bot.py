@@ -23,8 +23,6 @@ import chess.svg
 
 from andoma.movegeneration import next_move as andoma_gen
 
-project_folder = os.path.expanduser(".")  # adjust as appropriate
-load_dotenv(os.path.join(project_folder, ".env"))
 
 # Token is stored locally for security reasons
 # Read the entire contents of the file as a string
@@ -33,8 +31,11 @@ load_dotenv(os.path.join(project_folder, ".env"))
 #     TOKEN = file.read().strip()
 
 # TOKEN is stored as a environment variable
-# TOKEN = os.environ["BOT_TOKEN"]
-TOKEN = os.getenv("BOT_TOKEN")
+TOKEN = os.environ["BOT_TOKEN"]
+
+# project_folder = os.path.expanduser(".")  # adjust as appropriate
+# load_dotenv(os.path.join(project_folder, ".env"))
+# TOKEN = os.getenv("BOT_TOKEN")
 
 bot = telebot.TeleBot(TOKEN)
 
