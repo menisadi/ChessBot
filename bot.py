@@ -8,6 +8,8 @@ import pickle
 from datetime import date
 from fenToImage import fenToImage, loadPiecesFolder
 
+from dotenv import load_dotenv
+
 # taken from https://github.com/dn1z/pgn2gif
 import pgn2gif.pgn2gif
 
@@ -18,6 +20,9 @@ import chess
 import chess.engine
 import chess.pgn
 import chess.svg
+
+project_folder = os.path.expanduser(".")  # adjust as appropriate
+load_dotenv(os.path.join(project_folder, ".env"))
 
 # Token is stored locally for security reasons
 # Read the entire contents of the file as a string
