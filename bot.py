@@ -51,9 +51,9 @@ random_button = types.InlineKeyboardButton(
 color_keyboard.add(white_button, black_button, random_button)
 
 engine_keyboard = types.InlineKeyboardMarkup()
-stockfish_engine_button = types.InlineKeyboardButton(
-    "Stockfish", callback_data="engine_stockfish"
-)
+# stockfish_engine_button = types.InlineKeyboardButton(
+#     "Stockfish", callback_data="engine_stockfish"
+# )
 random_engine_button = types.InlineKeyboardButton(
     "Random", callback_data="engine_random"
 )
@@ -61,18 +61,16 @@ andoma_engine_button = types.InlineKeyboardButton(
     "Andoma", callback_data="engine_andoma"
 )
 
-engine_keyboard.add(
-    stockfish_engine_button, andoma_engine_button, random_engine_button
-)
+engine_keyboard.add(andoma_engine_button, random_engine_button)
 
 # Initiate engine
 # TODO - can we put this somehow in a function?
-engine_path = "Engines/stockfish_8_x64"
+# engine_path = "Engines/stockfish_8_x64"
 # engine_path = "Engines/stockfish_14_x64"
 # engine_path = "Engines/stockfish-ubuntu-x86-64-modern"
 # engine_path = "Engines/stockfish-macos-x86-64-modern"
-os.chmod(engine_path, stat.S_IRUSR | stat.S_IXUSR)
-engine = chess.engine.SimpleEngine.popen_uci(engine_path)
+# os.chmod(engine_path, stat.S_IRUSR | stat.S_IXUSR)
+# engine = chess.engine.SimpleEngine.popen_uci(engine_path)
 
 # diff = 1
 # engine.configure({"Skill Level": diff})
@@ -87,7 +85,8 @@ def show_help(message):
         "/help": "Show all the available commands",
         "/resign": "Resign",
         "/random": "Bot will make random moves",
-        "/stockfish": "Play against Stockfish engine (add a number [0-20] to limit its strength",
+        "/andoma": "Play against Andoma engine",
+        # "/stockfish": "Play against Stockfish engine (add a number [0-20] to limit its strength",
         "/show": "Show the board",
         "/moves": "Show a list of legal moves",
         "/gif": "Get a GIF of your game",
@@ -259,16 +258,23 @@ def bool_color_to_string(color_b):
         return "black"
 
 
-@bot.message_handler(commands=["stockfish"])
-def stockfish(message):
+# @bot.message_handler(commands=["stockfish"])
+# def stockfish(message):
+#     cid = message.chat.id
+#     try:
+#         diff = int(message.text.split()[1])
+#     except:
+#         diff = 20
+#     games[cid]["Engine"] = "stockfish"
+#     bot.send_message(message.chat.id, f"Stockfish Level {diff} activated")
+#     engine.configure({"Skill Level": diff})
+
+
+@bot.message_handler(commands=["andoma"])
+def andoma(message):
     cid = message.chat.id
-    try:
-        diff = int(message.text.split()[1])
-    except:
-        diff = 20
-    games[cid]["Engine"] = "stockfish"
-    bot.send_message(message.chat.id, f"Stockfish Level {diff} activated")
-    engine.configure({"Skill Level": diff})
+    games[cid]["Engine"] = "andoma"
+    bot.send_message(message.chat.id, "Andome activated")
 
 
 @bot.message_handler(commands=["random"])
