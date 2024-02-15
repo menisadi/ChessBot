@@ -391,9 +391,14 @@ def make_move(message):
         except ValueError:
             possible_moves = is_ambigious(move, cid)
             if possible_moves == []:
-                bot.send_message(message.chat.id, f"{move} is not a legal move.")
+                bot.send_message(
+                    message.chat.id, f"{move} is not a legal move."
+                )
             else:
-                bot.send_message(message.chat.id, f"{move} is not a legal move, did you mean: {" or ".join(possible_moves)}")
+                bot.send_message(
+                    message.chat.id,
+                    f"{move} is not a legal move, did you mean: {' or '.join(possible_moves)}",
+                )
             return
 
     if games[cid]["Turn"] == chess.WHITE:
