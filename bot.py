@@ -21,7 +21,9 @@ import chess.engine
 import chess.pgn
 import chess.svg
 
-from andoma.movegeneration import next_move as andoma_gen
+from Engines.andoma.movegeneration import next_move as andoma_gen
+from Engines.sunfish import sunfish_uci
+from Engines.sunfish.tools import uci
 
 
 # Token is stored locally for security reasons
@@ -31,11 +33,11 @@ from andoma.movegeneration import next_move as andoma_gen
 #     TOKEN = file.read().strip()
 
 # TOKEN is stored as a environment variable
-TOKEN = os.environ["BOT_TOKEN"]
+# TOKEN = os.environ["BOT_TOKEN"]
 
-# project_folder = os.path.expanduser(".")  # adjust as appropriate
-# load_dotenv(os.path.join(project_folder, ".env"))
-# TOKEN = os.getenv("BOT_TOKEN")
+project_folder = os.path.expanduser(".")  # adjust as appropriate
+load_dotenv(os.path.join(project_folder, ".env"))
+TOKEN = os.getenv("BOT_TOKEN")
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -60,8 +62,13 @@ random_engine_button = types.InlineKeyboardButton(
 andoma_engine_button = types.InlineKeyboardButton(
     "Andoma", callback_data="engine_andoma"
 )
+sunfish_engine_button = types.InlineKeyboardButton(
+    "Sunfish", callback_data="engine_sunfish"
+)
 
-engine_keyboard.add(andoma_engine_button, random_engine_button)
+engine_keyboard.add(
+    sunfish_engine_button, andoma_engine_button, random_engine_button
+)
 
 # Initiate engine
 # TODO - can we put this somehow in a function?
@@ -86,6 +93,7 @@ def show_help(message):
         "/resign": "Resign",
         "/random": "Bot will make random moves",
         "/andoma": "Play against Andoma engine",
+        "/sunfish": "Play against Sunfish engine",
         # "/stockfish": "Play against Stockfish engine (add a number [0-20] to limit its strength",
         "/show": "Show the board",
         "/moves": "Show a list of legal moves",
@@ -193,15 +201,25 @@ def bot_makes_a_move(cid):
     move = random.choice(list(games[cid]["Board"].legal_moves))
     if games[cid]["Engine"] == "andoma":
         move = andoma_gen(depth=4, board=games[cid]["Board"], debug=False)
-    elif games[cid]["Engine"] == "stockfish":
-        move_time = random.uniform(0.5, 1.5)
-        with engine.analysis(
-            games[cid]["Board"], chess.engine.Limit(time=(move_time))
-        ) as analysis:
-            for info in analysis:
-                pass
-
-        move = analysis.info["pv"][0]
+    elif games[cid]["Engine"] == "sunfish":
+        position = uci.from_fen(*games[cid]["Board"].fen().split())
+        current_hist = (
+            [position]
+            if uci.get_color(position) == uci.WHITE
+            else [position.rotate(), position]
+        )
+        total_time = random.randint(10, 60)
+        _, uci_move_str = sunfish_uci.generate_move(current_hist, total_time)
+        move = chess.Move.from_uci(uci_move_str)
+    # elif games[cid]["Engine"] == "stockfish":
+    #     move_time = random.uniform(0.5, 1.5)
+    #     with engine.analysis(
+    #         games[cid]["Board"], chess.engine.Limit(time=(move_time))
+    #     ) as analysis:
+    #         for info in analysis:
+    #             pass
+    #
+    #     move = analysis.info["pv"][0]
 
     move_san = games[cid]["Board"].san(move)
     games[cid]["Board"].push(move)

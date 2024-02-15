@@ -6,5 +6,5 @@
 - [x] Add option to play black
 - [ ] Clean code
 - [ ] Fix Stockfish
-- [ ] Add Sunfish?
+- [x] Add Sunfish?
   
