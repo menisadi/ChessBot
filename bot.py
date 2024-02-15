@@ -348,9 +348,10 @@ def pgn(message):
 
 
 def is_ambigious(move, cid):
-    list_legal_moves = list(games[cid]["Board"].legal_moves)
+    moves_in_uci = list(games[cid]["Board"].legal_moves)
+    moves_in_san = [games[cid]["Board"].san(move) for move in moves_in_uci]
     possible_intended_moves = [
-        m for m in list_legal_moves if move == m[0] + m[-2:]
+        m for m in moves_in_san if move == m[0] + m[-2:]
     ]
     return possible_intended_moves
 
