@@ -7,4 +7,4 @@
 - [ ] Clean code
 - [ ] Fix Stockfish
 - [x] Add Sunfish?
-  
+- [ ] Ambigious move - prompt to clarify (Ne2 -> Nfe2 or Nce2)  

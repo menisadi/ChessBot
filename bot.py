@@ -347,6 +347,14 @@ def pgn(message):
     )
 
 
+def is_ambigious(move, cid):
+    list_legal_moves = list(games[cid]["Board"].legal_moves)
+    possible_intended_moves = [
+        m for m in list_legal_moves if move == m[0] + m[-2:]
+    ]
+    return possible_intended_moves
+
+
 @bot.message_handler(func=lambda message: not message.text.startswith("/"))
 def make_move(message):
     # Parse the move from the message
@@ -381,7 +389,11 @@ def make_move(message):
             legal_move = True
             # node = node.add_variation(chess.Move.from_uci(move))
         except ValueError:
-            bot.send_message(message.chat.id, f"{move} is not a legal move.")
+            possible_moves = is_ambigious(move, cid)
+            if possible_moves == []:
+                bot.send_message(message.chat.id, f"{move} is not a legal move.")
+            else:
+                bot.send_message(message.chat.id, f"{move} is not a legal move, did you mean: {" or ".join(possible_moves)}")
             return
 
     if games[cid]["Turn"] == chess.WHITE:
