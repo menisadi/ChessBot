@@ -8,3 +8,4 @@
 - [ ] Fix Stockfish
 - [x] Add Sunfish?
 - [x] Ambiguous move - prompt to clarify (Ne2 -> Nfe2 or Nce2)  
+- [ ] Update README file
