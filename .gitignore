@@ -1,4 +1,5 @@
 *.exe
+.env
 token.txt
 *.png
 !pgn2gif/assets/*.png
