@@ -1,4 +1,5 @@
 import telebot
+import numpy as np
 from telebot import types
 import os
 import random
@@ -20,6 +21,7 @@ import chess
 import chess.engine
 import chess.pgn
 import chess.svg
+import chess.polyglot
 
 from Engines.andoma.movegeneration import next_move as andoma_gen
 from Engines.sunfish import sunfish_uci
@@ -211,15 +213,19 @@ def bot_makes_a_move(cid):
         total_time = random.randint(10, 60)
         _, uci_move_str = sunfish_uci.generate_move(current_hist, total_time)
         move = chess.Move.from_uci(uci_move_str)
-    # elif games[cid]["Engine"] == "stockfish":
-    #     move_time = random.uniform(0.5, 1.5)
-    #     with engine.analysis(
-    #         games[cid]["Board"], chess.engine.Limit(time=(move_time))
-    #     ) as analysis:
-    #         for info in analysis:
-    #             pass
-    #
-    #     move = analysis.info["pv"][0]
+    print(f"{move = }")
+    # toss a coin to decide if the bot will pick a book move or not
+    p = 0.2
+    coin = np.random.binomial(1, p)
+    # no need to look for a book move after move 15
+    if games[cid]["Count"] < 15 and coin == 1:
+        print("book move")
+        with chess.polyglot.open_reader("book.bin") as reader:
+            try:
+                move = reader.weighted_choice(games[cid]["Board"]).move
+            except IndexError:
+                print("No book moves aveliable")
+    print(f"{move = }")
 
     move_san = games[cid]["Board"].san(move)
     games[cid]["Board"].push(move)
@@ -318,7 +324,7 @@ def legal_moves(message):
     bot.send_message(message.chat.id, " ".join(moves_in_san))
 
 
-def finalize_pgn(pgn_str, player_color):
+def finalize_pgn(pgn_str, player_color, engine_name):
     final_pgn = pgn_str + "\n\n"
     # print(final_pgn)
     game_pgn = chess.pgn.read_game(io.StringIO(final_pgn))
@@ -329,9 +335,9 @@ def finalize_pgn(pgn_str, player_color):
 
     if player_color == chess.WHITE:
         game_pgn.headers["White"] = "Me"
-        game_pgn.headers["Black"] = "Telegram Bot"
+        game_pgn.headers["Black"] = f"Telegram {engine_name} Bot"
     else:
-        game_pgn.headers["White"] = "Telegram Bot"
+        game_pgn.headers["White"] = f"Telegram {engine_name} Bot"
         game_pgn.headers["Black"] = "Me"
 
     game_pgn.headers["Date"] = date.today()
@@ -343,7 +349,10 @@ def pgn(message):
     cid = message.chat.id
     # Send the pgn to the user
     bot.send_message(
-        message.chat.id, finalize_pgn(games[cid]["PGN"], games[cid]["Color"])
+        message.chat.id,
+        finalize_pgn(
+            games[cid]["PGN"], games[cid]["Color"], games[cid]["Engine"]
+        ),
     )
 
 
@@ -482,7 +491,11 @@ def resign(message):
 @bot.message_handler(commands=["gif"])
 def gif(message):
     cid = message.chat.id
-    game_pgn_str = str(finalize_pgn(games[cid]["PGN"], games[cid]["Color"]))
+    game_pgn_str = str(
+        finalize_pgn(
+            games[cid]["PGN"], games[cid]["Color"], games[cid]["Engine"]
+        )
+    )
     with open("game.pgn", "w") as f:
         f.write(game_pgn_str)
     creator = pgn2gif.PgnToGifCreator(
