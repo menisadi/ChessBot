@@ -215,7 +215,7 @@ def bot_makes_a_move(cid):
         move = chess.Move.from_uci(uci_move_str)
     print(f"{move = }")
     # toss a coin to decide if the bot will pick a book move or not
-    p = 0.2
+    p = 0.4
     coin = np.random.binomial(1, p)
     # no need to look for a book move after move 15
     if games[cid]["Count"] < 15 and coin == 1:
