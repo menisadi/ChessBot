@@ -184,6 +184,7 @@ def handle_color_callback(call):
 @bot.callback_query_handler(func=lambda call: call.data.startswith("engine"))
 def handle_engine_callback(call):
     chosen_engine = call.data.split("_")[-1]
+    # TODO: do we need this? Maybe convert to a proper log
     print(chosen_engine)
     games[call.message.chat.id]["Engine"] = chosen_engine
     bot.send_message(
@@ -212,6 +213,7 @@ def bot_makes_a_move(cid):
         total_time = random.randint(10, 60)
         _, uci_move_str = sunfish_uci.generate_move(current_hist, total_time)
         move = chess.Move.from_uci(uci_move_str)
+    # TODO: Convert prints to a log
     print(f"{move = }")
     # toss a coin to decide if the bot will pick a book move or not
     # TODO: maybe make this more flexible somehow
