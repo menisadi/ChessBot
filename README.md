@@ -1,10 +1,17 @@
-# BlindChessBot
+<h1 align="center">Blind-Chess Bot</h1>
+<div align="center" id="logo">
+    <img src="./Graphics/banner.png" width="200", height="200">
+</div>
 
+<p align="center">
+    <a href="https://www.gnu.org/licenses/gpl-3.0">
+      <img alt="License: GPL v3" src="https://img.shields.io/badge/License-GPLv3-blue.svg">
+    </a>
+    <a href="https://github.com/menisadi/ChessBot/pulse">
+      <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/menisadi/ChessBot">
+    </a>
+</p>
 
-![ChessBot banner](Graphics/banner.png)
-
-[![HitCount](http://hits.dwyl.com/menisadi/ChessBot.svg)](http://hits.dwyl.com/menisadi/ChessBot)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 A chat bot that allows users to play chess via a messaging platform.
 
