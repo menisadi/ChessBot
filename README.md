@@ -1,6 +1,6 @@
 <h1 align="center">Blind-Chess Bot</h1>
 <div align="center" id="logo">
-    <img src="./Graphics/banner.png" width="200", height="200">
+    <img src="./Graphics/chess_logo.jpeg" width="200", height="200">
 </div>
 
 <p align="center">
