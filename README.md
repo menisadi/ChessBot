@@ -44,6 +44,7 @@ A chat bot that allows users to play chess via a messaging platform.
 - `/help` - show all the available commands
 - `/moves` - show a list of legal moves
 - `/resign` - resign from the current game
+- `/sunfish` - switch to the Sunfish engine
 - `/andoma` - switch to the Andoma engine
 - `/random` - bot will make random moves
 - `/show` - show the board

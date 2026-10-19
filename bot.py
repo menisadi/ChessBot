@@ -296,13 +296,29 @@ def bool_color_to_string(color_b):
 @bot.message_handler(commands=["andoma"])
 def andoma(message):
     cid = message.chat.id
+    if cid not in games:
+        bot.send_message(cid, "No game yet. Send /start to begin.")
+        return
     games[cid]["Engine"] = "andoma"
     bot.send_message(message.chat.id, "Andome activated")
+
+
+@bot.message_handler(commands=["sunfish"])
+def sunfish(message):
+    cid = message.chat.id
+    if cid not in games:
+        bot.send_message(cid, "No game yet. Send /start to begin.")
+        return
+    games[cid]["Engine"] = "sunfish"
+    bot.send_message(message.chat.id, "Sunfish activated")
 
 
 @bot.message_handler(commands=["random"])
 def random_mode(message):
     cid = message.chat.id
+    if cid not in games:
+        bot.send_message(cid, "No game yet. Send /start to begin.")
+        return
     games[cid]["Engine"] = "random"
     bot.send_message(message.chat.id, "Random move activated")
 
