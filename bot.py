@@ -383,13 +383,14 @@ def make_move(message):
             if not games[cid]["Ended"]:
                 games[cid]["Board"].push_san(move)
             else:  # If user played a move without first pushing /start
+                n_games = games[cid]["No. Games"]
                 games[cid] = dict()
                 games[cid]["Board"] = chess.Board()
                 games[cid]["Engine"] = "random"
                 games[cid]["Count"] = 0
                 games[cid]["PGN"] = ""
                 games[cid]["Board"].set_fen(chess.STARTING_FEN)
-                games[cid]["No. Games"] += 1
+                games[cid]["No. Games"] = n_games + 1
                 with open("users.pickle", "wb") as f:
                     # Serialize the users dictionary and     write it to the file
                     games_counter = {
