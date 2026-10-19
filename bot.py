@@ -376,6 +376,9 @@ def make_move(message):
     # Parse the move from the message
     move = message.text  # [6:]
     cid = message.chat.id
+    if cid not in games:
+        bot.send_message(cid, "No game yet. Send /start to begin.")
+        return
     # Make the move on the board
     legal_move = False
     while legal_move == False:
