@@ -39,14 +39,17 @@ A chat bot that allows users to play chess via a messaging platform.
 ## Usage
 
 1. Start a conversation with the bot and use the following commands to play chess:
-- `/start` - start a new game
+- `/start` - start a new game (then pick an engine - Sunfish, Andoma or Random - and your color)
 - `<move>` - make a move on the chess board (in standard algebraic notation e.g. `e4`, `Nxe4`, `a8=Q`)
-- `/moves` - show a list of legal move
+- `/help` - show all the available commands
+- `/moves` - show a list of legal moves
 - `/resign` - resign from the current game
-- `/stockfish` -  Play against Stockfish engine (add a number [0-20] to limit its strength). [binary file](https://stockfishchess.org/download/) of Stockfish is not included so you need to download it and add to your local folder
-- `/random` - Bot will make random moves
+- `/andoma` - switch to the Andoma engine
+- `/random` - bot will make random moves
 - `/show` - show the board
 - `/pgn` - print the entire game in PGN format
+- `/fen` - print a FEN representation of the board
+- `/gif` - get a GIF of your game
 
 ## Notes
 
