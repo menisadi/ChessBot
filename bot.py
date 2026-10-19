@@ -249,7 +249,6 @@ def bot_makes_a_move(cid):
             games[cid]["PGN"] + " { The game is a draw. } 1/2-1/2"
         )
         games[cid]["Ended"] = True
-        games[cid]["Board"].set_fen(chess.STARTING_FEN)
         return
     if games[cid]["Board"].is_checkmate():
         bot.send_message(cid, "Game Over - You lost")
@@ -262,7 +261,6 @@ def bot_makes_a_move(cid):
             + result
         )
         games[cid]["Ended"] = True
-        games[cid]["Board"].set_fen(chess.STARTING_FEN)
         return
     games[cid]["Turn"] = not games[cid]["Turn"]
 
@@ -435,7 +433,6 @@ def make_move(message):
         games[cid]["PGN"] = (
             games[cid]["PGN"] + " { The game is a draw. } 1/2-1/2"
         )
-        games[cid]["Board"].set_fen(chess.STARTING_FEN)
         games[cid]["Ended"] = True
         return
 
@@ -449,7 +446,6 @@ def make_move(message):
             + " wins by checkmate. } "
             + result
         )
-        games[cid]["Board"].set_fen(chess.STARTING_FEN)
         games[cid]["Ended"] = True
         return
 
@@ -490,7 +486,6 @@ def resign(message):
         + result
     )
     games[cid]["Ended"] = True
-    games[cid]["Board"].set_fen(chess.STARTING_FEN)
 
 
 @bot.message_handler(commands=["gif"])
