@@ -12,3 +12,5 @@ pgn2gif-master/
 Backups/
 __pycache__/
 *.pyc
+.DS_Store
+.venv/

@@ -1,5 +1,0 @@
-pyTelegramBotAPI==4.15.2
-chess==1.10.0
-Pillow
-image
-python-dotenv

@@ -1,0 +1,16 @@
+[project]
+name = "chessbot"
+version = "0.1.0"
+description = "Telegram bot for playing (blind) chess"
+requires-python = ">=3.13"
+dependencies = [
+    "chess>=1.11.2",
+    "pillow>=13.0.0",
+    "pytelegrambotapi>=4.37.1",
+    "python-dotenv>=1.2.4",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.17.1",
+]

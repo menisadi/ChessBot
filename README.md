@@ -18,7 +18,8 @@ A chat bot that allows users to play chess via a messaging platform.
 
 ## Requirements
 
-- Python 3.x
+- Python 3.13+
+- [uv](https://docs.astral.sh/uv/)
 - [pyTelegramBotAPI - A simple, but extensible Python implementation for the Telegram Bot API](https://github.com/eternnoir/pyTelegramBotAPI)
 - [python-chess: a chess library for Python](https://github.com/niklasf/python-chess)
 - [pgn2gif](https://github.com/dn1z/pgn2gif)
@@ -31,8 +32,9 @@ A chat bot that allows users to play chess via a messaging platform.
     git clone https://github.com/menisadi/ChessBot.git
     cd ChessBot
     ```
-3. Create a file named `token.txt` and paste in it your API token.
-4. Run the script: `python3 bot.py`
+3. Install dependencies: `uv sync`
+4. Create a `.env` file containing your API token: `BOT_TOKEN=<your token>`
+5. Run the bot: `uv run bot.py`
 
 ## Usage
 
@@ -49,7 +51,7 @@ A chat bot that allows users to play chess via a messaging platform.
 ## Notes
 
 - The bot supports one game at a time per user
-- The bot has been tested on Python 3.10. It may work on other versions of Python, but this has not been tested.
+- The bot targets Python 3.13 (see `.python-version`).
 
 ## License
 
